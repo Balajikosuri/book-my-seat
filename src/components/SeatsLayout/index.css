@@ -1,0 +1,72 @@
+.book-my-seats-heading {
+    font-weight: bold;
+    font-size: 24px;
+}
+
+.gold-upper {
+    font-size: 16px;
+    color: gray;
+}
+
+.table-row {
+    flex-wrap: wrap;
+    display: flex;
+    flex: 0 1 auto;
+    gap: 0px !important;
+    padding: 0px !important;
+    margin: 0px !important;
+}
+
+td {
+    padding: 0px !important;
+    margin: 0px !important;
+}
+
+
+
+.seat {
+    width: 25px;
+    height: 25px;
+    font-size: 16px;
+}
+
+.grid-container {
+    padding: 20px;
+    display: grid;
+    grid-template-columns: repeat(30, 1fr);
+    gap: 15px;
+    /* Adjust the gap between items as needed */
+    border-bottom: 1px solid #b2b2b2;
+
+}
+
+@media screen and (max-width:800px) {
+    .grid-container {
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+}
+
+.grid-item {
+    height: 50px;
+    width: 50px;
+    flex: 0 1 auto;
+    /* Adjust the height as needed */
+    background-color: #3498db;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+tr {
+    flex-wrap: wrap;
+    padding: 15px;
+    margin-bottom: 5px;
+}
+
+.total-seats {
+    align-self: flex-end;
+    width: 60px;
+}

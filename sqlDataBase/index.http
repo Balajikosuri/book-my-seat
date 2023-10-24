@@ -1,0 +1,21 @@
+ GET http://localhost:8080/seats
+###
+ GET http://localhost:8080/totalAvilabelSeats
+
+###
+ GET http://localhost:8080/availableSeats?type=Premium&isBooked=1&limit=2
+###
+
+PUT http://localhost:8080/dseats/1
+###
+
+PUT http://localhost:8080/seats?startSeatId=2&seatType=standard&limit=3
+###
+
+PUT http://localhost:8080/set-reserved-seats-value/2
+
+
+###
+ GET http://localhost:8080/get-current-booked-seats
+
+###
