@@ -1,63 +1,72 @@
 import { Component } from "react";
 
 import "./index.css";
+import CustomHoverAlert from "../CustomHoverAlert";
 
 class Seat extends Component {
   state = {
     activeSeatNum: "",
     activeId: null,
-  };
-
-  doUnselect = async (id) => {
-    const { isActive } = this.state;
-    const { getSeatsFromApi } = this.props;
-    const options = {
-      method: "PUT",
-    };
-
-    isActive
-      ? await fetch(`http://localhost:8080/seats/${id}`, options, () => {
-          getSeatsFromApi();
-        })
-      : await fetch(`http://localhost:8080/dseats/${id}`, options, () => {
-          getSeatsFromApi();
-        });
+    showErrorMsg: false,
   };
 
   onClickSeat = async (id) => {
-    const url = `http://localhost:8080/seats/${id}`;
+    const { seatData, getSeatsFromApi, ticketTypeSelected, quantitySelected } =
+      this.props;
+    const url = `http://localhost:8080/toggle-seat-selection/${id}?limit=${quantitySelected}&type=${ticketTypeSelected}`;
     const options = {
       method: "PUT",
     };
-    await fetch(url, options);
+    const { type } = seatData;
+
+    if (type !== ticketTypeSelected) {
+      this.setState({ showErrorMsg: true });
+      alert("Invalid Seat type !");
+    }
+    if (quantitySelected !== "" && ticketTypeSelected !== "") {
+      await fetch(url, options, () => {
+        getSeatsFromApi();
+      });
+    } else {
+      alert("please select Type and Quantity of the tickets");
+    }
+
     // console.log(id);
   };
 
   render() {
-    const { activeId } = this.state;
+    // const { activeId } = this.state;
 
     // const isActive = this.toggleOfSeat(activeSeatNum);
     // console.log(this.toggleOfSeat(activeSeatNum));
-    const { seatData, setActiveSeatId, getSeatsFromApi } = this.props;
-    const { seatNumberInRow, isBooked, row, id, seatReserved } = seatData;
+    const { seatData, onSelect, getSeatsFromApi} =
+      this.props;
+    const { seatNumberInRow, isBooked, row, id, seatReserved, type } = seatData;
+    const { showErrorMsg } = this.state;
 
     return (
-      <button
-        id="seat-btn"
-        // disabled={isBooked}
-        value={`${row}_${seatNumberInRow}`}
-        className={`btn btn-outline-success seat-btn m-0 p-0 ${
-          isBooked && "booked-seat"
-        }    ${isBooked && seatReserved !== null && "booked-seat"}`}
-        type="button"
-        disabled={isBooked}
-        onClick={(e) => {
-          this.onClickSeat(id);
-          getSeatsFromApi();
-        }}
-      >
-        {seatNumberInRow}
-      </button>
+      <>
+        <CustomHoverAlert open={showErrorMsg} />
+        <button
+          id="seat-btn"
+          value={`${row}_${seatNumberInRow}`}
+          className={`btn btn-outline-success seat-btn m-0 p-0     ${
+            seatReserved && "booked-seat btn-secondary"
+          }  ${isBooked && "btn-success text-light"} ${
+            type === "Premium" && "btn border-warning"
+          }`}
+          // ${isBooked && seatReserved !== null && "booked-seat"}
+          type="button"
+          disabled={seatReserved}
+          onClick={(e) => {
+            this.onClickSeat(id);
+            onSelect(showErrorMsg);
+            getSeatsFromApi();
+          }}
+        >
+          {seatNumberInRow}
+        </button>
+      </>
     );
   }
 }

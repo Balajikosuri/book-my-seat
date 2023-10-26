@@ -1,0 +1,9 @@
+.popup-content {
+    width: auto !important;
+    border-radius: 10px;
+    height: 50%;
+    width: min(90%, 1100px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}

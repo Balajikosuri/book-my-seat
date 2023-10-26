@@ -1,15 +1,21 @@
 import React from "react";
 
 const SelectionFilter = (props) => {
-  const { onChangeTicketType, onChangeQuantity } = props;
+  const {
+    onChangeTicketType,
+    ticketTypeValue,
+    QuantityValue,
+    onChangeQuantity,
+  } = props;
   return (
     <>
       <div className="styled-select">
         <select
+          value={ticketTypeValue}
           onChange={(e) => onChangeTicketType(e)}
           className="btn btn-secondary pl-3 pr-5"
         >
-          <option value="" disabled selected>
+          <option value="" disabled>
             -- Ticket Type --
           </option>
           <option value="Premium">Premium</option>
@@ -18,10 +24,11 @@ const SelectionFilter = (props) => {
       </div>
       <div className="number-dropdown ">
         <select
+          value={QuantityValue}
           onChange={(e) => onChangeQuantity(e)}
           className="btn btn-secondary pl-3 pr-5"
         >
-          <option value="" disabled selected>
+          <option value="" disabled>
             -- Q.ty --
           </option>
           <option value="1">1</option>

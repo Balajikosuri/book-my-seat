@@ -6,6 +6,10 @@ import { v4 as uuidv4 } from "uuid";
 import "./index.css";
 import { MutatingDots } from "react-loader-spinner";
 import SelectionFilter from "../SelectionFilter";
+import ProceedButton from "../ProceedButton";
+
+import CustomHoverAlert from "../CustomHoverAlert";
+
 const today = startOfToday();
 const formattedDate = format(today, "EEE MMM dd yyyy");
 
@@ -35,26 +39,67 @@ class SeatsLayout extends Component {
     totalAvilabelSeats: 0,
     ticketTypeSelected: "",
     quantitySelected: "",
-    currentSeatsIDArray: null,
+    selectedSeatsIDsArray: [],
+    showErrorMsg: true,
   };
 
   componentDidMount() {
     this.getSeatsFromApi();
   }
 
-  onClickProceed = async () => {
-    const options = {
-      method: "PUT",
-    };
-    const currentSeatsIDArray = await fetch(
+  onSelect = async (showErrorMsg) => {
+    this.setState({ showErrorMsg });
+    const resCurrentSeatsIDArray = await fetch(
       "http://localhost:8080/get-current-booked-seats"
     );
-    const arryData = await currentSeatsIDArray.json();
-    // console.log(await currentSeatsIDArray);
+    const selectedSeatsIDsArray = await resCurrentSeatsIDArray.json();
+    this.setState({ selectedSeatsIDsArray }, this.getSeatsFromApi);
+  };
 
+  onUpdateReservedSeats = async () => {
+    this.onSelect();
+    const { selectedSeatsIDsArray } = this.state;
+
+    const options = {
+      method: "POST",
+      body: JSON.stringify({ selectedSeatsIDsArray }), // Ensure the payload is an object
+      headers: {
+        "Content-Type": "application/json",
+      },
+    };
+
+    const { ticketTypeSelected, quantitySelected } = this.state;
+
+    quantitySelected === "" &&
+      ticketTypeSelected === "" &&
+      alert("Please Select Type and Quantity ");
+
+    try {
+      const response = await fetch(
+        "http://localhost:8080/set-reserved-seats-value",
+        options,
+        this.onSelect
+      );
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      // Assuming getSeatsFromApi returns a Promise
+      await this.getSeatsFromApi();
+
+      // alert(JSON.stringify(selectedSeatsIDsArray));
+    } catch (error) {
+      console.error("Error updating reserved seats:", error);
+      // Handle the error as needed
+    }
+  };
+
+  onClickProceed = async () => {
+    this.onUpdateReservedSeats();
     this.setState(
       {
-        currentSeatsIDArray: arryData,
+        // currentSeatsIDArray: arryData,
         ticketTypeSelected: "",
         quantitySelected: "",
       },
@@ -72,6 +117,7 @@ class SeatsLayout extends Component {
 
   getSeatsFromApi = async () => {
     this.setState({ apiStatus: apiStatusConstants.loading });
+
     try {
       const totalAvilabelSeatsObjRes = await fetch(
         "http://localhost:8080/totalAvilabelSeats"
@@ -110,12 +156,12 @@ class SeatsLayout extends Component {
   );
 
   renderSeatsPage = () => {
-    const { chunkArray } = this.state;
+    const { chunkArray, ticketTypeSelected, quantitySelected } = this.state;
     return (
-      <table className="table  table-borderless border-0 ml-0 p-5">
+      <table className="table overflow-scroll  table-borderless border-0 ml-0 p-5">
         <tbody className="m-0 gap-2">
           {/* Premium */}
-          <tr className="p-3 pt-5">
+          <tr id="Premium-seats-container" className="p-3 pt-5">
             <td>
               <h1 className="gold-upper mb-0 mt-3">Premium-Rs. 350.00</h1>
               <hr className="mb-3" />
@@ -133,6 +179,9 @@ class SeatsLayout extends Component {
                 seat !== 0 && (
                   <td key={`${seat}${uuidv4()}`} className="p-1 m-0">
                     <Seat
+                      quantitySelected={quantitySelected}
+                      ticketTypeSelected={ticketTypeSelected}
+                      onSelect={this.onSelect}
                       setActiveSeatId={this.setActiveSeatId}
                       getSeatsFromApi={this.getSeatsFromApi}
                       key={seat.id}
@@ -155,6 +204,9 @@ class SeatsLayout extends Component {
                 seat !== 0 && (
                   <td key={`${seat}${uuidv4()}`} className="p-1 m-0">
                     <Seat
+                      quantitySelected={quantitySelected}
+                      ticketTypeSelected={ticketTypeSelected}
+                      onSelect={this.onSelect}
                       setActiveSeatId={this.setActiveSeatId}
                       getSeatsFromApi={this.getSeatsFromApi}
                       key={seat.id}
@@ -177,6 +229,9 @@ class SeatsLayout extends Component {
                 seat !== 0 && (
                   <td key={`${seat}${uuidv4()}`} className="p-1 m-0">
                     <Seat
+                      quantitySelected={quantitySelected}
+                      ticketTypeSelected={ticketTypeSelected}
+                      onSelect={this.onSelect}
                       setActiveSeatId={this.setActiveSeatId}
                       getSeatsFromApi={this.getSeatsFromApi}
                       key={seat.id}
@@ -188,7 +243,7 @@ class SeatsLayout extends Component {
             })}
           </tr>
           {/* Executive */}
-          <tr className="p-3 pt-5">
+          <tr id="Standard-seats-container" className="p-3 pt-5">
             <td>
               <h1 className="gold-upper mb-0 mt-3">Standard-Rs. 250.00</h1>
               <hr className="mb-3" />
@@ -206,6 +261,9 @@ class SeatsLayout extends Component {
                 seat !== 0 && (
                   <td key={`${seat}${uuidv4()}`} className="p-1 m-0">
                     <Seat
+                      quantitySelected={quantitySelected}
+                      ticketTypeSelected={ticketTypeSelected}
+                      onSelect={this.onSelect}
                       setActiveSeatId={this.setActiveSeatId}
                       getSeatsFromApi={this.getSeatsFromApi}
                       key={seat.id}
@@ -228,6 +286,9 @@ class SeatsLayout extends Component {
                 seat !== 0 && (
                   <td key={`${seat}${uuidv4()}`} className="p-1 m-0">
                     <Seat
+                      quantitySelected={quantitySelected}
+                      ticketTypeSelected={ticketTypeSelected}
+                      onSelect={this.onSelect}
                       setActiveSeatId={this.setActiveSeatId}
                       getSeatsFromApi={this.getSeatsFromApi}
                       key={seat.id}
@@ -250,51 +311,9 @@ class SeatsLayout extends Component {
                 seat !== 0 && (
                   <td key={`${seat}${uuidv4()}`} className="p-1 m-0">
                     <Seat
-                      setActiveSeatId={this.setActiveSeatId}
-                      getSeatsFromApi={this.getSeatsFromApi}
-                      key={seat.id}
-                      seatData={seat}
-                    />
-                  </td>
-                )
-              );
-            })}
-          </tr>
-          <tr
-            key={uuidv4()}
-            className="d-flex flex-row justify-content-evenly m-0 table-row mb-2"
-          >
-            <td style={{ width: "80px" }}>
-              <h1 className="m-0 pe-4 pt-1 seat pe-4">G</h1>
-            </td>
-            {chunkArray[6].map((seat) => {
-              return (
-                seat !== 0 && (
-                  <td key={`${seat}${uuidv4()}`} className="p-1 m-0">
-                    <Seat
-                      setActiveSeatId={this.setActiveSeatId}
-                      getSeatsFromApi={this.getSeatsFromApi}
-                      key={seat.id}
-                      seatData={seat}
-                    />
-                  </td>
-                )
-              );
-            })}
-          </tr>
-
-          <tr
-            key={uuidv4()}
-            className="d-flex flex-row justify-content-evenly m-0 table-row mb-2"
-          >
-            <td style={{ width: "80px" }}>
-              <h1 className="m-0 pe-4 pt-1 seat pe-4">H</h1>
-            </td>
-            {chunkArray[7].map((seat) => {
-              return (
-                seat !== 0 && (
-                  <td key={`${seat}${uuidv4()}`} className="p-1 m-0">
-                    <Seat
+                      quantitySelected={quantitySelected}
+                      ticketTypeSelected={ticketTypeSelected}
+                      onSelect={this.onSelect}
                       setActiveSeatId={this.setActiveSeatId}
                       getSeatsFromApi={this.getSeatsFromApi}
                       key={seat.id}
@@ -332,7 +351,12 @@ class SeatsLayout extends Component {
   };
 
   render() {
-    const { totalAvilabelSeats } = this.state;
+    const {
+      totalAvilabelSeats,
+      quantitySelected,
+      ticketTypeSelected,
+      showErrorMsg,
+    } = this.state;
     return (
       <>
         <div className="container p-3">
@@ -349,12 +373,22 @@ class SeatsLayout extends Component {
               <SelectionFilter
                 onChangeTicketType={this.onChangeTicketType}
                 onChangeQuantity={this.onChangeQuantity}
+                ticketTypeValue={ticketTypeSelected}
+                QuantityValue={quantitySelected}
               />
               <h3 className="btn btn-success btn-lg disabled text-align-left w-25 total-seats">
                 Avilable Seats:{"  "}
                 <b className="text-warning"> {totalAvilabelSeats}</b>
               </h3>
+              {/* <br />
+              <a href="#Premium-seats-container">Premium</a>
+              <br />
+              <a href="#Standard-seats-container">Standard</a> */}
             </div>
+            <>
+              {/* <ControlledPopup /> */}
+              <CustomHoverAlert />
+            </>
             {this.renderResultPage()}
             <div className="w-100 text-center">
               <img
@@ -365,16 +399,20 @@ class SeatsLayout extends Component {
             </div>
           </div>
         </div>
+        <ProceedButton onClickProceed={this.onClickProceed} />
 
-        <div className="w-100 fixed-bottom bg-secondary d-flex justify-content-center p-2">
-          <button
-            onClick={this.onClickProceed}
-            type="button"
-            className="btn btn-success text-center"
-          >
-            Book Ticket
-          </button>
-        </div>
+        <CustomHoverAlert
+          open={showErrorMsg}
+          Component={
+            <SelectionFilter
+              onChangeTicketType={this.onChangeTicketType}
+              onChangeQuantity={this.onChangeQuantity}
+              ticketTypeValue={ticketTypeSelected}
+              QuantityValue={quantitySelected}
+            />
+          }
+          message={"invalid Seat Type"}
+        />
       </>
     );
   }
