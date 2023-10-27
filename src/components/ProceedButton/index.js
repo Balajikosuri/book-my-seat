@@ -1,7 +1,8 @@
+import { memo } from "react";
 import "./index.css";
 
 const ProceedButton = (props) => {
-  const { onClickProceed } = props;
+  const { onClickProceed, ProceedButtonDisbled } = props;
 
   return (
     <div className="w-100 fixed-bottom bg-light d-flex justify-content-evenly align-content-center pt-3 pb-1">
@@ -48,6 +49,7 @@ const ProceedButton = (props) => {
         onClick={() => onClickProceed()}
         type="button"
         className="btn btn-danger proceed-button"
+        disabled={ProceedButtonDisbled}
       >
         Proceed
       </button>
@@ -55,4 +57,4 @@ const ProceedButton = (props) => {
   );
 };
 
-export default ProceedButton;
+export default memo(ProceedButton);

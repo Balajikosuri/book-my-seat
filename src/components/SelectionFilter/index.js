@@ -1,4 +1,5 @@
 import React from "react";
+import { memo } from "react";
 
 const SelectionFilter = (props) => {
   const {
@@ -42,4 +43,4 @@ const SelectionFilter = (props) => {
   );
 };
 
-export default SelectionFilter;
+export default memo(SelectionFilter);

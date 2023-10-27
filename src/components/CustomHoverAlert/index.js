@@ -1,6 +1,7 @@
 import "./index.css";
 import "reactjs-popup/dist/index.css";
 import Popup from "reactjs-popup";
+import { memo } from "react";
 
 const CustomHoverAlert = (props) => {
   const { Component, open } = props;
@@ -35,4 +36,4 @@ const CustomHoverAlert = (props) => {
   );
 };
 
-export default CustomHoverAlert;
+export default memo(CustomHoverAlert);

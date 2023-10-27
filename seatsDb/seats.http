@@ -1,0 +1,17 @@
+
+GET http://localhost:8080/seats
+###
+GET http://localhost:8080/totalAvilabelSeats
+###
+GET http://localhost:8080/get-current-booked-seats
+###
+PUT  http://localhost:8080/toggle-seat-selection/1?limit=1&type="Premimum"
+###
+
+POST http://localhost:8080/book-tickets
+Content-Type: application/json
+
+{
+    "selectedSeatsIDsArray":[1,2]
+}
+

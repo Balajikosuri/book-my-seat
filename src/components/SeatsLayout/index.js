@@ -9,6 +9,7 @@ import SelectionFilter from "../SelectionFilter";
 import ProceedButton from "../ProceedButton";
 
 import CustomHoverAlert from "../CustomHoverAlert";
+import { memo } from "react";
 
 const today = startOfToday();
 const formattedDate = format(today, "EEE MMM dd yyyy");
@@ -41,6 +42,7 @@ class SeatsLayout extends Component {
     quantitySelected: "",
     selectedSeatsIDsArray: [],
     showErrorMsg: true,
+    ProceedButtonDisbled: false,
   };
 
   componentDidMount() {
@@ -48,9 +50,10 @@ class SeatsLayout extends Component {
   }
 
   onSelect = async (showErrorMsg) => {
+    const { ticketTypeSelected } = this.state;
     this.setState({ showErrorMsg });
     const resCurrentSeatsIDArray = await fetch(
-      "http://localhost:8080/get-current-booked-seats"
+      `http://localhost:8080/get-current-booked-seats?type=${ticketTypeSelected}`
     );
     const selectedSeatsIDsArray = await resCurrentSeatsIDArray.json();
     this.setState({ selectedSeatsIDsArray }, this.getSeatsFromApi);
@@ -76,19 +79,20 @@ class SeatsLayout extends Component {
 
     try {
       const response = await fetch(
-        "http://localhost:8080/set-reserved-seats-value",
+        `http://localhost:8080/book-tickets?type=${ticketTypeSelected}`,
         options,
         this.onSelect
       );
+      const jsonData = await response.json();
 
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
 
       // Assuming getSeatsFromApi returns a Promise
-      await this.getSeatsFromApi();
+      selectedSeatsIDsArray.length > 0 && (await this.getSeatsFromApi());
 
-      // alert(JSON.stringify(selectedSeatsIDsArray));
+      alert(jsonData.message);
     } catch (error) {
       console.error("Error updating reserved seats:", error);
       // Handle the error as needed
@@ -96,14 +100,20 @@ class SeatsLayout extends Component {
   };
 
   onClickProceed = async () => {
-    this.onUpdateReservedSeats();
-    this.setState(
-      {
-        // currentSeatsIDArray: arryData,
-        ticketTypeSelected: "",
-        quantitySelected: "",
+    this.setState({ ProceedButtonDisbled: true });
+
+    setTimeout(
+      async () => {
+        await this.onUpdateReservedSeats();
+        this.setState({
+          ProceedButtonDisbled: false,
+          ticketTypeSelected: "",
+          quantitySelected: "",
+        });
+        this.getSeatsFromApi();
       },
-      this.getSeatsFromApi
+
+      3000
     );
   };
 
@@ -120,7 +130,7 @@ class SeatsLayout extends Component {
 
     try {
       const totalAvilabelSeatsObjRes = await fetch(
-        "http://localhost:8080/totalAvilabelSeats"
+        "http://localhost:8080/totalAvailableSeats"
       );
       const totalAvilabelSeatsObj = await totalAvilabelSeatsObjRes.json();
       const response = await fetch("http://localhost:8080/seats");
@@ -356,6 +366,7 @@ class SeatsLayout extends Component {
       quantitySelected,
       ticketTypeSelected,
       showErrorMsg,
+      ProceedButtonDisbled,
     } = this.state;
     return (
       <>
@@ -399,7 +410,10 @@ class SeatsLayout extends Component {
             </div>
           </div>
         </div>
-        <ProceedButton onClickProceed={this.onClickProceed} />
+        <ProceedButton
+          ProceedButtonDisbled={ProceedButtonDisbled}
+          onClickProceed={this.onClickProceed}
+        />
 
         <CustomHoverAlert
           open={showErrorMsg}
@@ -418,4 +432,4 @@ class SeatsLayout extends Component {
   }
 }
 
-export default SeatsLayout;
+export default memo(SeatsLayout);

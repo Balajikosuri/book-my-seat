@@ -2,6 +2,7 @@ import { Component } from "react";
 
 import "./index.css";
 import CustomHoverAlert from "../CustomHoverAlert";
+import { memo } from "react";
 
 class Seat extends Component {
   state = {
@@ -71,4 +72,4 @@ class Seat extends Component {
   }
 }
 
-export default Seat;
+export default memo(Seat);
