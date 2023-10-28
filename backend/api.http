@@ -1,0 +1,17 @@
+
+GET http://localhost:8080/seats
+###
+GET http://localhost:8080/totalAvailableSeats
+###
+GET http://localhost:8080/get-current-booked-seats
+###
+PUT  http://localhost:8080/toggle-seat-selection/1?limit=2&type="Premimum"
+###
+
+POST http://localhost:8080/book-tickets?type="Standard"
+Content-Type: application/json
+
+{
+    "selectedSeatsIDsArray":[180]
+}
+

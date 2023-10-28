@@ -146,8 +146,8 @@ app.post("/book-tickets", async (req, res) => {
     try {
       await Promise.all(
         selectedSeatsIDsArray.map(async (id) => {
-          await new Promise((resolve, reject) => {
-            db.run(
+          await new Promise(async (resolve, reject) => {
+            await db.run(
               `UPDATE seats SET seatReserved = 1, isBooked = 1 WHERE id = ${id} and type='${type}'`,
               (err) => {
                 if (err) {
