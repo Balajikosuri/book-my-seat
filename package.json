@@ -19,6 +19,7 @@
     "react-loader-spinner": "^5.4.5",
     "react-scripts": "5.0.1",
     "reactjs-popup": "^2.0.6",
+    "sequelize-cockroachdb": "^6.0.5",
     "serverless-http": "^3.2.0",
     "sqlite": "^5.0.1",
     "sqlite3": "^5.1.6",
@@ -26,8 +27,8 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "netlify deploy --prod",
+    "start": "nodemon backend/api.js",
+    "build": "nodemon api.js",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
