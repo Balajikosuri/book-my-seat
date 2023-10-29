@@ -101,17 +101,15 @@ class SeatsLayout extends Component {
 
   onClickProceed = async () => {
     this.setState({ ProceedButtonDisbled: true });
-
+    await this.onUpdateReservedSeats();
+    this.setState({
+      ProceedButtonDisbled: false,
+      ticketTypeSelected: "",
+      quantitySelected: "",
+    });
+    this.getSeatsFromApi();
     setTimeout(
-      async () => {
-        await this.onUpdateReservedSeats();
-        this.setState({
-          ProceedButtonDisbled: false,
-          ticketTypeSelected: "",
-          quantitySelected: "",
-        });
-        this.getSeatsFromApi();
-      },
+      async () => {},
 
       3000
     );

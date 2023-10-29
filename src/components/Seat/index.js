@@ -40,8 +40,7 @@ class Seat extends Component {
 
     // const isActive = this.toggleOfSeat(activeSeatNum);
     // console.log(this.toggleOfSeat(activeSeatNum));
-    const { seatData, onSelect, getSeatsFromApi} =
-      this.props;
+    const { seatData, onSelect, getSeatsFromApi } = this.props;
     const { seatNumberInRow, isBooked, row, id, seatReserved, type } = seatData;
     const { showErrorMsg } = this.state;
 
