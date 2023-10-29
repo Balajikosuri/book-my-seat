@@ -2,19 +2,14 @@ const express = require("express");
 const { open } = require("sqlite");
 const sqlite3 = require("sqlite3");
 const path = require("path");
+const cors = require("cors");
 
 const databasePath = path.join(__dirname, "seats.db");
 
 const app = express();
 
 app.use(express.json());
-
-app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "http://localhost:3002");
-  res.header("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, DELETE");
-  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
-  next();
-});
+app.use(cors());
 
 let db = null;
 const port = 8080;
