@@ -12,7 +12,7 @@ app.use(express.json());
 app.use(cors());
 
 let db = null;
-const port = 8080;
+const port = process.env.PORT || 8080;
 
 const initializeDbAndServer = async () => {
   try {
@@ -21,7 +21,7 @@ const initializeDbAndServer = async () => {
       driver: sqlite3.Database,
     });
 
-    app.listen(process.env.PORT || port, () =>
+    app.listen(port, () =>
       console.log(`Server Running at http://localhost:${port}/`)
     );
   } catch (error) {

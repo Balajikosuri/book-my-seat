@@ -42,7 +42,6 @@ class SeatsLayout extends Component {
     quantitySelected: "",
     selectedSeatsIDsArray: [],
     showErrorMsg: true,
-    ProceedButtonDisbled: false,
   };
 
   componentDidMount() {
@@ -51,9 +50,9 @@ class SeatsLayout extends Component {
 
   onSelect = async (showErrorMsg) => {
     const { ticketTypeSelected } = this.state;
-    this.setState({ showErrorMsg });
+
     const resCurrentSeatsIDArray = await fetch(
-      `http://localhost:8080/get-current-booked-seats?type=${ticketTypeSelected}`
+      `https://book-my-seat.onrender.com/get-current-booked-seats?type=${ticketTypeSelected}`
     );
     const selectedSeatsIDsArray = await resCurrentSeatsIDArray.json();
     this.setState({ selectedSeatsIDsArray }, this.getSeatsFromApi);
@@ -77,41 +76,39 @@ class SeatsLayout extends Component {
       ticketTypeSelected === "" &&
       alert("Please Select Type and Quantity ");
 
-    try {
-      const response = await fetch(
-        `http://localhost:8080/book-tickets?type=${ticketTypeSelected}`,
-        options,
-        this.onSelect
-      );
-      const jsonData = await response.json();
+    if (selectedSeatsIDsArray.length > 0) {
+      try {
+        const response = await fetch(
+          `https://book-my-seat.onrender.com/book-tickets?type=${ticketTypeSelected}`,
+          options,
+          this.onSelect()
+        );
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
+        const jsonData = await response.json();
+        this.getSeatsFromApi();
+        await alert(jsonData.message);
+        this.setState({ selectedSeatsIDsArray: [] });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        // Assuming getSeatsFromApi returns a Promise
+      } catch (error) {
+        console.error("Error updating reserved seats:", error);
+        // Handle the error as needed
       }
-
-      // Assuming getSeatsFromApi returns a Promise
-      selectedSeatsIDsArray.length > 0 && (await this.getSeatsFromApi());
-
-      alert(jsonData.message);
-    } catch (error) {
-      console.error("Error updating reserved seats:", error);
-      // Handle the error as needed
     }
   };
 
   onClickProceed = async () => {
-    this.setState({ ProceedButtonDisbled: true });
     await this.onUpdateReservedSeats();
-    this.setState({
-      ProceedButtonDisbled: false,
-      ticketTypeSelected: "",
-      quantitySelected: "",
-    });
-    this.getSeatsFromApi();
-    setTimeout(
-      async () => {},
-
-      3000
+    this.setState(
+      {
+        ticketTypeSelected: "",
+        quantitySelected: "",
+      },
+      this.getSeatsFromApi
     );
   };
 
@@ -128,10 +125,10 @@ class SeatsLayout extends Component {
 
     try {
       const totalAvilabelSeatsObjRes = await fetch(
-        "http://localhost:8080/totalAvailableSeats"
+        "https://book-my-seat.onrender.com/totalAvailableSeats"
       );
       const totalAvilabelSeatsObj = await totalAvilabelSeatsObjRes.json();
-      const response = await fetch("http://localhost:8080/seats");
+      const response = await fetch("https://book-my-seat.onrender.com/seats");
       const jsonData = await response.json();
       // console.log(jsonData);
       const chunkArray = splitArrayIntoParts(jsonData, 30);

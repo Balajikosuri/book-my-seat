@@ -14,7 +14,7 @@ class Seat extends Component {
   onClickSeat = async (id) => {
     const { seatData, getSeatsFromApi, ticketTypeSelected, quantitySelected } =
       this.props;
-    const url = `http://localhost:8080/toggle-seat-selection/${id}?limit=${quantitySelected}&type=${ticketTypeSelected}`;
+    const url = `https://book-my-seat.onrender.com/toggle-seat-selection/${id}?limit=${quantitySelected}&type=${ticketTypeSelected}`;
     const options = {
       method: "PUT",
     };

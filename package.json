@@ -27,7 +27,7 @@
   "scripts": {
     "start": "react-scripts start",
     "start:both": "concurrently \"npm start\" \"nodemon backend/api.js\"",
-    "build": "react-scripts start & nodemon api.js",
+    "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
